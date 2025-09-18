@@ -41,20 +41,20 @@ sequenceDiagram
 
 ```mermaid
 erDiagram
-    USERS {
-        INTEGER id PK
-        TEXT email UNIQUE
-        TEXT passwordHash
-        TEXT firstName
-        TEXT lastName
-        TEXT phone
-        TEXT membershipCode
-        TEXT membershipLevel
-        TEXT registrationDate
-        INTEGER pointsBalance
-    }
+  USERS {
+    id int PK
+    email string UNIQUE
+    passwordHash string
+    firstName string
+    lastName string
+    phone string
+    membershipCode string
+    membershipLevel string
+    registrationDate date
+    pointsBalance int
+  }
 
-    %% No other tables currently; this diagram lists attributes and keys for clarity.
+  %% No other tables currently; this diagram lists attributes and keys for clarity.
 ```
 
 ## Data shapes (TypeScript interfaces)
