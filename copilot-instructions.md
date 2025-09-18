@@ -1,96 +1,141 @@
-# Repository Instructions — express-ts-api
+# Repository instructions for Copilot
 
 Purpose
+- Backend for an Express + TypeScript API that provides authentication (JWT), user profiles, SQLite persistence, and Swagger docs.
+- Use these instructions to assist with code changes, tests, docs, and developer workflows.
 
-This folder implements a TypeScript + Express REST API used for workshop exercises and demos. It focuses on authentication and profile endpoints, uses SQLite for local development, and follows a layered architecture: routes → middleware → controllers → services → models. Keep changes small, typed, and testable.
+Primary languages & tools
+- TypeScript, Node.js, Express
+- SQLite (dev.sqlite), jwt (jsonwebtoken), bcryptjs
+- Dev tools: ts-node-dev, swagger-ui-express, dotenv
+- Diagrams: Mermaid in detailed.md
 
-Quick start
+How to run locally (dev)
+- cd to project root: /Users/supphakrit.t/Desktop/Project/workshop/GenerativeAI/temp-ai-workshop/express-ts-api
+- Install: npm install
+- Provide env (example `.env` exists): PORT=4000, JWT_SECRET set
+- Start dev server: npm run dev
+- Build: npm run build
+- Start production: JWT_SECRET="..." PORT=4000 npm start
 
-1. Change into the folder:
+What to change and how
+- Follow MVC structure in src/: models/, services/, controllers/, routes/, middleware/.
+- When adding fields to the user model:
+  - Update DB table creation SQL in src/models/userModel.ts.
+  - Add migration helper (ensureUserColumns) or proper migration script.
+  - Update service signatures, controller request parsing, and swagger.yml.
+  - Preserve backward compatibility for login endpoints.
+- When changing runtime behavior that depends on env vars, read from process.env at runtime (not module load).
+- When updating routes, update swagger.yml and detailed.md (Mermaid) consistently.
 
-   cd express-ts-api
+Testing & verification
+- Use curl or Swagger UI at /docs to validate endpoints.
+- New features should include a minimal unit test if practical.
+- Run TypeScript build to catch type errors before committing: npm run build
 
-2. Install dependencies:
+Docs & API spec
+- swagger.yml is served at /swagger.yml; update it when API surface changes.
+- detailed.md contains sequence and ER diagrams (Mermaid); update diagrams to reflect schema or flow changes.
 
-   npm install
+Security & secrets
+- Never commit secrets (.env credentials, JWT secret) or dev.sqlite containing private data.
+- Add secrets to .gitignore and provide `.env.example` for dev defaults instead.
+- Use bcrypt for password hashing and JWT for auth; keep JWT_SECRET strong.
 
-3. Start the dev server (typical):
+Commit & PR guidelines
+- Keep commits focused and atomic.
+- Update README and swagger.yml for public API changes.
+- If adding DB columns, document migration steps in the PR description.
 
-   npm run dev
+Assistant behavior guidelines
+- Ask clarifying questions when intent is ambiguous (what fields, public vs private, migration strategy).
+- Provide code changes only in TypeScript/JS/Markdown and include filepaths.
+- When suggesting code, include minimal, complete snippets and tests if applicable.
+- Avoid exposing secrets or writing one-off scripts that embed credentials.
+- Prefer small, incremental changes. If a large refactor is needed, propose a migration plan first.
 
-   If there is no script, use:
+Examples of good prompts
+- "Add endpoint GET /users with pagination and update swagger.yml."
+- "Migrate users table to add `membershipLevel` and provide a safe migration script."
+- "Add middleware to require `admin` role on route X and update docs."
 
-   npx ts-node src/index.ts
+Examples of bad prompts
+- "Push credentials in code."
+- "Disable authentication for all routes."
 
-Environment
+If unsure, ask:
+- Should this change be backwards-compatible?
+- Should I add a migration helper or a full migration?
+- Do you want tests and swagger updates included?
 
-Expected env vars (create a `.env` file):
+```// filepath: /Users/supphakrit.t/Desktop/Project/workshop/GenerativeAI/temp-ai-workshop/express-ts-api/copilot-instrction.md
 
-PORT=3000
-JWT_SECRET=replace_me
-DATABASE_URL=sqlite:./dev.sqlite
-NODE_ENV=development
-BCRYPT_SALT_ROUNDS=10
+# Repository instructions for Copilot
 
-What this repo contains
+Purpose
+- Backend for an Express + TypeScript API that provides authentication (JWT), user profiles, SQLite persistence, and Swagger docs.
+- Use these instructions to assist with code changes, tests, docs, and developer workflows.
 
-- `src/index.ts` — application bootstrap and middleware wiring
-- `src/routes/*` — minimal route definitions only
-- `src/controllers/*` — HTTP boundary, parse/validate input, return responses
-- `src/services/*` — business logic, pure functions where possible
-- `src/models/*` — DB access (SQLite), single-responsibility persistence methods
-- `src/middleware/authMiddleware.ts` — verify token, attach `req.user`
-- `swagger.yml` — OpenAPI contract; keep in sync with routes
+Primary languages & tools
+- TypeScript, Node.js, Express
+- SQLite (dev.sqlite), jwt (jsonwebtoken), bcryptjs
+- Dev tools: ts-node-dev, swagger-ui-express, dotenv
+- Diagrams: Mermaid in detailed.md
 
-Conventions and best practices
+How to run locally (dev)
+- cd to project root: /Users/supphakrit.t/Desktop/Project/workshop/GenerativeAI/temp-ai-workshop/express-ts-api
+- Install: npm install
+- Provide env (example `.env` exists): PORT=4000, JWT_SECRET set
+- Start dev server: npm run dev
+- Build: npm run build
+- Start production:_SECRET="..." PORT=4000 npm start
 
-- Use TypeScript with explicit return types for exported functions.
-- Controllers should be thin: parse, validate, call services, and send responses.
-- Services contain business logic and are unit-testable without Express.
-- Centralize config and env access (consider `src/config/`).
-- Use `async/await` and a centralized error handler (e.g., `asyncHandler` wrapper).
-- Validate inputs (Zod/Joi recommended) before calling services.
-- Never log secrets or raw tokens; strip `passwordHash` from responses.
-- Prefer constants over magic numbers and keep functions small and focused.
+What to change and how
+- Follow MVC structure in src/: models/, services/, controllers/, routes/, middleware/.
+- When adding fields to the user model:
+  - Update DB table creation SQL in src/models/userModel.ts.
+  - Add migration helper (ensureUserColumns) or proper migration script.
+  - Update service signatures, controller request parsing, and swagger.yml.
+  - Preserve backward compatibility for login endpoints.
+- When changing runtime behavior that depends on env vars, read from process.env at runtime (not module load).
+- When updating routes, update swagger.yml and detailed.md (Mermaid) consistently.
 
-Auth pattern (expected)
+Testing & verification
+- Use curl or Swagger UI at /docs to validate endpoints.
+- New features should include a minimal unit test if practical.
+- Run TypeScript build to catch type errors before committing: npm run build
 
-- Register: hash password and store user.
-- Login: verify password, return short-lived JWT.
-- Protected routes: `Authorization: Bearer <token>`.
-- Future: refresh token endpoint, rotating refresh tokens.
+Docs & API spec
+- swagger.yml is served at /swagger.yml; update it when API surface changes.
+- detailed.md contains sequence and ER diagrams (Mermaid); update diagrams to reflect schema or flow changes.
 
-Testing
+Security & secrets
+- Never commit secrets (.env credentials, JWT secret) or dev.sqlite containing private data.
+- Add secrets to .gitignore and provide `.env.example` for dev defaults instead.
+- Use bcrypt for password hashing and JWT for auth; keep JWT_SECRET strong.
 
-- Unit tests for services (mock models).
-- Integration tests for auth flow and protected routes (Supertest).
-- Use ephemeral/in-memory SQLite or a test DB file for integration tests.
+Commit & PR guidelines
+- Keep commits focused and atomic.
+- Update README and swagger.yml for public API changes.
+- If adding DB columns, document migration steps in the PR description.
 
-How to ask Copilot for changes (examples)
+Assistant behavior guidelines
+- Ask clarifying questions when intent is ambiguous (what fields, public vs private, migration strategy).
+- Provide code changes only in TypeScript/JS/Markdown and include filepaths.
+- When suggesting code, include minimal, complete snippets and tests if applicable.
+- Avoid exposing secrets or writing one-off scripts that embed credentials.
+- Prefer small, incremental changes. If a large refactor is needed, propose a migration plan first.
 
-- "Add a refresh token endpoint and rotate refresh tokens on use. Update authService and authMiddleware accordingly."
-- "Create Zod schemas for registration and login and validate input in authController."
-- "Refactor authController to use an `asyncHandler(fn)` wrapper and remove duplicated try/catch blocks."
+Examples of good prompts
+- "Add endpoint GET /users with pagination and update swagger.yml."
+- "Migrate users table to add `membershipLevel` and provide a safe migration script."
+- "Add middleware to require `admin` role on route X and update docs."
 
-Error handling mapping
+Examples of bad prompts
+- "Push credentials in code."
+- "Disable authentication for all routes."
 
-- Validation errors → 400
-- Auth failure → 401
-- Forbidden → 403
-- Not found → 404
-- Conflict (duplicate) → 409
-- Server errors → 500 (log stack in server logs)
-
-If something is ambiguous
-
-Assume a conventional Express + TypeScript layout. When generating code, prefer adding small utility modules (e.g., `src/lib/token.ts`, `src/lib/password.ts`) rather than embedding logic directly in controllers. Flag unknowns in a comment (e.g., "ASSUMPTION: using JWT with HS256 and `process.env.JWT_SECRET`").
-
-Commit style
-
-- `feat: ...`, `fix: ...`, `chore: ...`, `refactor: ...`, `docs: ...`, `test: ...`
-
-Contact / Next steps
-
-If you want, I can:
-- Create example Zod validation schemas.
-- Add an `asyncHandler` wrapper and simple error classes.
+If unsure, ask:
+- Should this change be backwards-compatible?
+- Should I add a migration helper or a full migration?
+- Do you want tests and swagger updates included?
