@@ -2,6 +2,8 @@ import express, { Request, Response } from 'express';
 import sqlite3 from 'sqlite3';
 import { open, Database } from 'sqlite';
 import authRouter from './routes/authRoutes';
+import swaggerUi from 'swagger-ui-express';
+import YAML from 'yamljs';
 import { createUsersTable } from './models/userModel';
 
 const app = express();
@@ -24,6 +26,12 @@ async function start() {
 
   // attach db to app so controllers can access it
   app.set('db', db);
+
+  // serve swagger YAML and UI
+  const swaggerDocument = YAML.load('./swagger.yml');
+  // serve raw YAML file
+  app.get('/swagger.yml', (req, res) => res.type('yaml').send(require('fs').readFileSync('./swagger.yml', 'utf8')));
+  app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
   app.use('/auth', authRouter);
 
