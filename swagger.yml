@@ -6,6 +6,9 @@ info:
 servers:
   - url: http://localhost:3000
 
+security:
+  - bearerAuth: []
+
 paths:
   /auth/register:
     post:
@@ -45,7 +48,27 @@ paths:
         '401':
           description: Unauthorized
 
+  /profile:
+    get:
+      summary: Get current user's profile
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: OK
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/AuthResponse'
+        '401':
+          description: Unauthorized
+
 components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
   schemas:
     RegisterRequest:
       type: object
@@ -57,6 +80,21 @@ components:
         password:
           type: string
           minLength: 6
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
+          type: string
+        membershipCode:
+          type: string
+        membershipLevel:
+          type: string
+        registrationDate:
+          type: string
+          format: date
+        pointsBalance:
+          type: integer
 
     LoginRequest:
       type: object
@@ -66,6 +104,12 @@ components:
           type: string
           format: email
         password:
+          type: string
+        firstName:
+          type: string
+        lastName:
+          type: string
+        phone:
           type: string
 
     AuthResponse:
@@ -78,5 +122,20 @@ components:
               type: integer
             email:
               type: string
+            firstName:
+              type: string
+            lastName:
+              type: string
+            phone:
+              type: string
+            membershipCode:
+              type: string
+            membershipLevel:
+              type: string
+            registrationDate:
+              type: string
+              format: date
+            pointsBalance:
+              type: integer
         token:
           type: string

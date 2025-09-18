@@ -1,12 +1,13 @@
 import { Request, Response } from 'express';
-import { Database } from 'sqlite3';
+import { Database } from 'sqlite';
 import * as authService from '../services/authService';
 
 export async function register(req: Request, res: Response) {
   const db: Database = req.app.get('db');
-  const { email, password } = req.body;
+  const { email, password, firstName, lastName, phone, membershipCode, membershipLevel, registrationDate, pointsBalance } = req.body;
   try {
-    const result = await authService.register(db, email, password);
+    const profile = { firstName, lastName, phone, membershipCode, membershipLevel, registrationDate, pointsBalance };
+    const result = await authService.register(db, email, password, profile);
     res.status(201).json(result);
   } catch (err: any) {
     res.status(400).json({ error: err.message });
